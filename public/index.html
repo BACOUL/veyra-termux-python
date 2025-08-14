@@ -1,108 +1,91 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Veyra — le fait.</title>
-<link rel="icon" href="/public/favicon.svg">
-<link rel="stylesheet" href="/public/css/globals.css">
-<header class="container" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0">
-  <a href="/" style="display:flex;gap:10px;align-items:center;color:#E5F3F0;text-decoration:none">
-    <img src="/public/logo/veyra_mark_dark.svg" alt="Veyra" width="36" height="36" style="border-radius:12px">
-    <strong style="letter-spacing:.2px">Veyra</strong>
-  </a>
-  <nav style="display:flex;gap:10px;flex-wrap:wrap">
-    <a class="btn-ghost" href="/public/app.html">Aujourd’hui</a>
-    <a class="btn-ghost" href="/public/proofs.html">Preuves</a>
-    <a class="btn-ghost" href="/public/benchmarks.html">Benchmarks</a>
-    <a class="btn-ghost" href="/public/status.html">Status</a>
-    <a class="btn" href="/export.zip">Export ZIP</a>
-  </nav>
-</header>
-
-<main class="container" style="padding:20px 0 40px">
-  <!-- Hero -->
-  <section class="card" style="display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center">
-    <div>
-      <span class="badge">Preuve-ou-rien • Local-first</span>
-      <h1 style="margin-top:8px;color:var(--veyra-primary);font-family:var(--veyra-font-head)">
-        Veyra le fait.<br><span style="color:#E5F3F0">Vous validez. Preuve à l’arrivée.</span>
-      </h1>
-      <p class="muted" style="margin-top:8px;max-width:52ch">
-        1–3 priorités classées. Exécution sous contrôle (N0→N3 + caps). Reçu JSON haché + audit.
-      </p>
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <button id="quick" class="btn">Lancer la première</button>
-        <a class="btn-ghost" href="/public/app.html">Voir mes priorités</a>
-        <a class="btn-ghost" href="/public/proofs.html">Voir une preuve</a>
-      </div>
-      <div id="quick-status" class="mono muted" style="margin-top:8px"></div>
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Veyra — Aujourd’hui</title>
+<link rel="stylesheet" href="/public/css/globals.css"/>
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml"/>
+</head><body>
+<main class="container" style="padding:28px 16px">
+  <section class="card" style="padding:20px;overflow:hidden">
+    <div class="badge">Preuve-ou-rien • Local-first</div>
+    <h1 style="font-family:var(--veyra-font-head);font-size:44px;line-height:1.1;margin:10px 0;color:var(--veyra-primary)">
+      Veyra le fait.<br/>Vous validez. Preuve à l’arrivée.
+    </h1>
+    <p class="muted" style="max-width:56ch">OS d’actions prouvées — 1–3 cartes classées, exécution sous caps N0→N3, reçu JSON haché + audit.</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <a class="btn" href="#today">Voir mes priorités</a>
+      <a class="btn-ghost" href="/public/proofs.html">Voir une preuve</a>
     </div>
-
-    <!-- Carte “dernière preuve” -->
-    <aside class="card" style="background:#0b1020">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <strong>Dernière preuve</strong>
-        <a class="btn-ghost" href="/public/proofs.html">Tout voir</a>
-      </div>
-      <div id="last-proof" class="mono muted" style="margin-top:8px">Chargement…</div>
-    </aside>
   </section>
 
-  <!-- Actions rapides -->
-  <section class="cards" style="margin-top:16px">
-    <div class="card">
-      <strong>Exporter mes données</strong>
-      <p class="muted">Preuves + audit (zip)</p>
-      <a class="btn" href="/export.zip">Exporter ZIP</a>
+  <section id="proof-sample" class="card" style="margin-top:16px">
+    <h3>Preuve réelle (dernière)</h3>
+    <div id="last-proof" class="mono" style="font-size:12px;white-space:pre-wrap;background:#0b1020;border:1px solid var(--veyra-slate-700);border-radius:12px;padding:12px;margin-top:8px">Chargement…</div>
+    <div style="margin-top:8px;">
+      <a id="last-proof-link" class="btn-ghost" href="/public/proofs.html">Ouvrir dans le viewer</a>
     </div>
-    <div class="card">
-      <strong>URL publique</strong>
-      <p class="muted"><code id="puburl"></code></p>
-      <button class="btn-ghost" onclick="navigator.clipboard.writeText(location.origin);alert('URL copiée')">Copier</button>
-    </div>
+  </section>
+
+  <section id="today" class="cards" style="margin-top:20px">
+    <h2>Aujourd’hui</h2>
+    <div id="today-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px"></div>
   </section>
 </main>
 
+<script src="/public/js/layout.js"></script>
+<script src="/public/js/main.js"></script>
 <script>
-const $ = s => document.querySelector(s);
-
-// Remplit l'URL publique
-$('#puburl').textContent = location.origin;
-
-// Charge la dernière preuve
-async function loadLast(){
+async function loadLastProof(){
   try{
-    const r = await fetch('/proofs'); if(!r.ok) throw 0;
-    const j = await r.json();
-    if(!j.items || !j.items.length){ $('#last-proof').textContent = '— Aucune pour le moment'; return; }
-    const p = j.items[0];
-    const d = new Date(p.timestamp||Date.now()).toLocaleString();
-    const link = `/public/proof.html?id=${encodeURIComponent(p.id)}`;
-    const art = (p.artifacts && p.artifacts[0]) ? ` • <a class="btn-ghost" target="_blank" href="${p.artifacts[0]}">Reçu</a>` : '';
-    $('#last-proof').innerHTML =
-      `<div>${d}</div><div style="font-weight:700">${p.title||p.id}</div>
-       <div>id=${p.id} • kind=${p.kind} • sha256=${(p.sha256||'').slice(0,8)}…</div>
-       <div style="margin-top:8px"><a class="btn-ghost" href="${link}">Ouvrir dans le viewer</a>${art}</div>`;
-  }catch(e){ $('#last-proof').textContent='(erreur de chargement)'; }
+    const list = await getJSON('/proofs');            // attend { items:[id1,id2...] } ou similaire
+    const id = (list.items||[]).slice(-1)[0];
+    if(!id){ document.getElementById('last-proof').textContent='Aucune preuve pour l’instant.'; return; }
+    const p = await (await fetch('/proofs/'+id)).json();
+    document.getElementById('last-proof').textContent = JSON.stringify({id:p.id, kind:p.kind, sha256:p.sha256, result:p.result}, null, 2);
+    const a = document.getElementById('last-proof-link');
+    a.href = '/public/proof.html?id='+encodeURIComponent(id);
+  }catch(e){
+    document.getElementById('last-proof').textContent='Impossible de charger la preuve : '+e.message;
+  }
 }
 
-// Bouton “Lancer la première”
-async function quickRun(){
-  const s = $('#quick-status'); s.textContent = 'Chargement des priorités…';
-  try{
-    const r = await fetch('/today?n=1'); const j = await r.json();
-    if(!j.priorities || !j.priorities.length){ s.textContent='Rien à faire.'; return; }
-    const id = j.priorities[0].id;
-    s.textContent = `Exécution: ${id}…`;
-    const resp = await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':String(Math.random()).slice(2,8)},body:JSON.stringify({id})});
-    const pr = await resp.json();
-    if(pr.ok){
-      const url = `/public/proof.html?id=${encodeURIComponent(pr.proof_id)}`;
-      s.innerHTML = `✅ Fait. <a class="btn-ghost" href="${url}">Voir la preuve</a>`;
-      await loadLast();
-    }else{
-      s.textContent = 'Échec exécution.';
-    }
-  }catch(e){ s.textContent='Erreur réseau.'; }
+function cardHTML(c){
+  const mins = Math.round((c.estimates?.time_min||1));
+  const score = (c.score||0).toFixed(2);
+  return `
+  <div class="card">
+    <div class="badge">score ${score} • ~${mins} min</div>
+    <h3 style="margin:8px 0 6px 0">${c.title||c.id}</h3>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn" data-run="${c.id}">Lancer</button>
+      <a class="btn-ghost" href="/public/app.html">Détails</a>
+    </div>
+  </div>`;
 }
-$('#quick').addEventListener('click', quickRun);
 
-loadLast();
+async function loadToday(){
+  const root = document.getElementById('today-list');
+  root.innerHTML = '';
+  try{
+    const j = await getJSON('/today?n=3');
+    (j.priorities||[]).forEach(c => root.appendChild(el(cardHTML(c))));
+  }catch(e){
+    root.appendChild(el(`<div class="card">Erreur de chargement : ${e.message}</div>`));
+  }
+  // bind run
+  root.querySelectorAll('[data-run]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      btn.disabled = true; const id = btn.getAttribute('data-run');
+      try{
+        const r = await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':idk()}, body:JSON.stringify({id})});
+        const j = await r.json();
+        if(j.proof_id){ location.href = '/public/proof.html?id='+encodeURIComponent(j.proof_id); return; }
+        alert('Exécution OK, mais pas de proof_id retourné.');
+      }catch(e){ alert('Échec exécution : '+e.message); }
+      finally{ btn.disabled = false; }
+    });
+  });
+}
+
+loadToday(); loadLastProof();
 </script>
+</body></html>

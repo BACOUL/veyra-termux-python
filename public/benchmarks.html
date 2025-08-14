@@ -1,23 +1,46 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Veyra — Benchmarks</title>
-<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
-<main class="container" style="padding:24px 0">
-  <h1 style="color:var(--veyra-primary);font-family:var(--veyra-font-head)">Benchmarks</h1>
-  <div id="kpis" class="cards"></div>
+<link rel="stylesheet" href="/public/css/globals.css"/>
+</head><body>
+<main class="container" style="padding:24px 16px">
+  <h1>Benchmarks</h1>
+  <div id="nums" class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"></div>
+  <canvas id="chart" width="900" height="280" style="width:100%;max-width:900px;margin-top:16px;border:1px solid var(--veyra-slate-700);border-radius:12px;background:#0b1020"></canvas>
 </main>
+<script src="/public/js/layout.js"></script>
 <script>
+function median(a){ if(!a.length) return 0; const s=a.slice().sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function p95(a){ if(!a.length) return 0; const s=a.slice().sort((x,y)=>x-y); const i=Math.floor(0.95*(s.length-1)); return s[i]; }
 async function load(){
-  const b = await (await fetch('/bench')).json();
-  const m = await (await fetch('/metrics')).json();
-  const root = document.getElementById('kpis'); root.innerHTML='';
-  const card=(t,v)=>`<div class="card"><div class="muted" style="font-size:12px">${t}</div><div style="font-size:28px;font-weight:700">${v}</div></div>`;
-  root.innerHTML = `
-    ${card('Total proofs', b.total_proofs ?? '—')}
-    ${card('VSR (succès)', b.vsr_ratio!=null ? (b.vsr_ratio*100).toFixed(1)+'%' : '—')}
-    ${card('TTV médian', b.ttv_median!=null ? b.ttv_median+' s' : '—')}
-    ${card('TTV p95', b.ttv_p95!=null ? b.ttv_p95+' s' : '—')}
-    ${card('Compteur (metrics)', m.veyra_proofs_total ?? '—')}
-  `;
+  const list = await (await fetch('/proofs')).json();
+  const ids = (list.items||list||[]);
+  const proofs = await Promise.all(ids.map(id=>fetch('/proofs/'+id).then(r=>r.json()).catch(()=>null)));
+  const ok = proofs.filter(p=>p && p.result && p.result.status==='success');
+  const ttv = ok.map(p=>+p.ttv_sec||0).filter(x=>x>=0);
+
+  // KPIs
+  const nums = document.getElementById('nums');
+  const kpi = (label,val,unit='')=>`<div class="card"><div class="muted">${label}</div><div style="font-size:28px;font-weight:700;margin-top:6px">${val}${unit}</div></div>`;
+  nums.innerHTML = kpi('Preuves totales', proofs.length)
+                 + kpi('VSR (succès)', (proofs.length?Math.round(ok.length*100/proofs.length):0)+'%')
+                 + kpi('TTV médian', (median(ttv)||0).toFixed(3),' s')
+                 + kpi('TTV p95', (p95(ttv)||0).toFixed(3),' s');
+
+  // Mini-graphe TTV (20 derniers)
+  const last = ttv.slice(-20);
+  const c = document.getElementById('chart').getContext('2d');
+  c.clearRect(0,0,900,280);
+  const pad=28, w=900-pad*2, h=280-pad*2, min=0, max=Math.max(...last,1);
+  // axes
+  c.strokeStyle='#2a3344'; c.beginPath(); c.moveTo(pad,pad); c.lineTo(pad,pad+h); c.lineTo(pad+w,pad+h); c.stroke();
+  // ligne
+  c.strokeStyle='#00C2A8'; c.lineWidth=2; c.beginPath();
+  last.forEach((v,i)=>{ const x=pad+i*(w/Math.max(last.length-1,1)); const y=pad+h-(v/min===Infinity?0:(v-min)/(max-min||1))*h; if(i===0) c.moveTo(x,y); else c.lineTo(x,y); });
+  c.stroke();
+  // points
+  c.fillStyle='#0CE6CB'; last.forEach((v,i)=>{ const x=pad+i*(w/Math.max(last.length-1,1)); const y=pad+h-(v-min)/(max-min||1)*h; c.beginPath(); c.arc(x,y,3,0,Math.PI*2); c.fill(); });
 }
 load();
 </script>
+</body></html>
