@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — Status</title>
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<main class="container" style="padding:24px 0">
+  <h1 style="color:var(--veyra-primary);font-family:var(--veyra-font-head)">Status</h1>
+  <div id="box" class="card">Chargement…</div>
+</main>
+<script>
+(async()=>{
+  const h = await fetch('/healthz').then(r=>r.text()).catch(()=>'-');
+  const m = await fetch('/metrics').then(r=>r.json()).catch(()=>({}));
+  const box = document.getElementById('box');
+  const ok = h.trim()==='OK';
+  box.innerHTML = `
+    <div style="font-size:22px;font-weight:700">${ok?'✅ UP':'❌ DOWN'}</div>
+    <div class="mono muted" style="margin-top:8px">proofs_total=${m.veyra_proofs_total??'—'}</div>
+    <div class="mono muted">chain_head=${m.veyra_chain_head??'—'}</div>
+    <div class="muted" style="margin-top:10px"><a class="btn" href="/">Accueil</a></div>`;
+})();
+</script>

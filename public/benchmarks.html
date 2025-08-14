@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — Benchmarks</title>
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<main class="container" style="padding:24px 0">
+  <h1 style="color:var(--veyra-primary);font-family:var(--veyra-font-head)">Benchmarks</h1>
+  <div id="kpis" class="cards"></div>
+</main>
+<script>
+async function load(){
+  const b = await (await fetch('/bench')).json();
+  const m = await (await fetch('/metrics')).json();
+  const root = document.getElementById('kpis'); root.innerHTML='';
+  const card=(t,v)=>`<div class="card"><div class="muted" style="font-size:12px">${t}</div><div style="font-size:28px;font-weight:700">${v}</div></div>`;
+  root.innerHTML = `
+    ${card('Total proofs', b.total_proofs ?? '—')}
+    ${card('VSR (succès)', b.vsr_ratio!=null ? (b.vsr_ratio*100).toFixed(1)+'%' : '—')}
+    ${card('TTV médian', b.ttv_median!=null ? b.ttv_median+' s' : '—')}
+    ${card('TTV p95', b.ttv_p95!=null ? b.ttv_p95+' s' : '—')}
+    ${card('Compteur (metrics)', m.veyra_proofs_total ?? '—')}
+  `;
+}
+load();
+</script>

@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — Preuves</title>
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<main class="container" style="padding:24px 0">
+  <h1 style="color:var(--veyra-primary);font-family:var(--veyra-font-head)">Preuves (récentes)</h1>
+  <div id="list"></div>
+</main>
+<script>
+async function load(){
+  const j = await (await fetch('/proofs')).json();
+  const root = document.getElementById('list'); root.innerHTML='';
+  j.items.forEach(p=>{
+    const d = new Date(p.timestamp||Date.now()).toLocaleString();
+    const short = (p.sha256||'').slice(0,8)+'…';
+    const el = document.createElement('div'); el.className='card';
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+      <div><div class="mono muted" style="font-size:12px">${d}</div>
+      <div style="font-weight:700">${p.title||p.id}</div>
+      <div class="mono muted" style="font-size:12px">id=${p.id} · kind=${p.kind} · sha256=${short} · ttv=${p.ttv_sec??'—'}s</div></div>
+      <div style="display:flex;gap:10px">
+        <a class="btn" target="_blank" href="/proofs/${p.id}">Ouvrir</a>
+        <button class="btn-ghost" onclick="navigator.clipboard.writeText('${p.id}')">Copier l’ID</button>
+      </div></div>`;
+    root.appendChild(el);
+  });
+}
+load();
+</script>
