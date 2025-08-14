@@ -36,16 +36,13 @@
 <script>
 async function loadLastProof(){
   try{
-    const list = await getJSON('/proofs');            // attend { items:[id1,id2...] } ou similaire
+    const list = await getJSON('/proofs');
     const id = (list.items||[]).slice(-1)[0];
     if(!id){ document.getElementById('last-proof').textContent='Aucune preuve pour l’instant.'; return; }
     const p = await (await fetch('/proofs/'+id)).json();
     document.getElementById('last-proof').textContent = JSON.stringify({id:p.id, kind:p.kind, sha256:p.sha256, result:p.result}, null, 2);
-    const a = document.getElementById('last-proof-link');
-    a.href = '/public/proof.html?id='+encodeURIComponent(id);
-  }catch(e){
-    document.getElementById('last-proof').textContent='Impossible de charger la preuve : '+e.message;
-  }
+    document.getElementById('last-proof-link').href = '/public/proof.html?id='+encodeURIComponent(id);
+  }catch(e){ document.getElementById('last-proof').textContent='Impossible de charger : '+e.message; }
 }
 
 function cardHTML(c){
@@ -63,29 +60,24 @@ function cardHTML(c){
 }
 
 async function loadToday(){
-  const root = document.getElementById('today-list');
-  root.innerHTML = '';
+  const root = document.getElementById('today-list'); root.innerHTML='';
   try{
     const j = await getJSON('/today?n=3');
     (j.priorities||[]).forEach(c => root.appendChild(el(cardHTML(c))));
-  }catch(e){
-    root.appendChild(el(`<div class="card">Erreur de chargement : ${e.message}</div>`));
-  }
-  // bind run
+  }catch(e){ root.appendChild(el(`<div class="card">Erreur : ${e.message}</div>`)); }
   root.querySelectorAll('[data-run]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       btn.disabled = true; const id = btn.getAttribute('data-run');
       try{
         const r = await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':idk()}, body:JSON.stringify({id})});
         const j = await r.json();
-        if(j.proof_id){ location.href = '/public/proof.html?id='+encodeURIComponent(j.proof_id); return; }
-        alert('Exécution OK, mais pas de proof_id retourné.');
-      }catch(e){ alert('Échec exécution : '+e.message); }
+        if(j.proof_id){ toast('Preuve créée'); setTimeout(()=>location.href='/public/proof.html?id='+encodeURIComponent(j.proof_id), 300); return; }
+        toast('Exécution OK (pas de proof_id)');
+      }catch(e){ toast('Échec : '+e.message); }
       finally{ btn.disabled = false; }
     });
   });
 }
-
 loadToday(); loadLastProof();
 </script>
 </body></html>

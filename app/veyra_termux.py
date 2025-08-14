@@ -178,3 +178,17 @@ def export_zip():
 
 if __name__=='__main__':
     app.run(host='0.0.0.0',port=8787)
+# --- Serve homepage ---
+from flask import send_from_directory as _sfd
+
+@app.get('/')
+def home():
+    return _sfd('public', 'index.html')
+
+# --- 404 custom page ---
+@app.errorhandler(404)
+def not_found(e):
+    try:
+        return _sfd('public','404.html'), 404
+    except Exception:
+        return 'Not Found', 404

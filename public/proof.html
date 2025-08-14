@@ -1,61 +1,68 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Veyra — Proof Viewer</title>
-<link rel="icon" href="/public/favicon.svg">
-<link rel="stylesheet" href="/public/css/globals.css">
-<main class="container" style="padding:24px 0">
-  <h1 style="color:var(--veyra-primary);font-family:var(--veyra-font-head)">Proof Viewer</h1>
-  <p class="muted">Passez un paramètre <code>?id=...</code> pour charger une preuve. <a class="btn-ghost" href="/public/proofs.html">Voir la liste</a></p>
-  <div id="box" class="card">En attente d’un ID…</div>
+<link rel="stylesheet" href="/public/css/globals.css"/>
+</head><body>
+<main class="container" style="padding:22px 16px">
+  <h1>Proof Viewer</h1>
+  <p class="muted">Passez un paramètre <code>?id=…</code> pour charger une preuve. <a href="/public/proofs.html">Voir la liste</a></p>
+
+  <section id="box" class="card" style="margin-top:12px"></section>
+
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn" id="copyLink">Copier le lien</button>
+    <a class="btn-ghost" id="openArtifact" target="_blank" rel="noreferrer">Ouvrir l’artifact</a>
+  </div>
+
+  <h3 style="margin-top:16px">JSON brut</h3>
+  <pre id="raw" class="mono" style="white-space:pre-wrap;background:#0b1020;border:1px solid var(--veyra-slate-700);border-radius:12px;padding:12px"></pre>
 </main>
+
+<script src="/public/js/layout.js"></script>
+<script src="/public/js/main.js"></script>
 <script>
-function canon(o){
-  if(Array.isArray(o)) return o.map(canon);
-  if(o && typeof o==='object'){
-    const out={}; Object.keys(o).sort().forEach(k=>{ out[k]=canon(o[k]); });
-    return out;
-  }
-  return o;
-}
-async function sha256Canonical(obj){
-  const s = JSON.stringify(canon(obj));
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 async function load(){
-  const id = new URLSearchParams(location.search).get('id');
-  const box = document.getElementById('box');
-  if(!id){ box.innerHTML='Aucun ID fourni. Exemple : <code>?id=p_123456789</code>'; return; }
-  const r = await fetch('/proofs/'+encodeURIComponent(id));
-  if(!r.ok){ box.innerHTML='❌ Preuve introuvable.'; return; }
-  const p = await r.json();
+  const id = new URL(location.href).searchParams.get('id');
+  const box = document.getElementById('box'); const raw = document.getElementById('raw');
+  if(!id){ box.innerHTML='<div class="muted">Aucun id fourni.</div>'; return; }
 
-  // Recalcule SHA-256 sur une copie **sans** le champ sha256 (comme côté serveur)
-  const copy = JSON.parse(JSON.stringify(p)); delete copy.sha256;
-  const recalc = await sha256Canonical(copy);
-  const ok = (recalc === p.sha256);
+  const p = await (await fetch('/proofs/'+id)).json();
+  raw.textContent = JSON.stringify(p,null,2);
 
-  const a = (p.artifacts||[]).map(u=>`<li><a class="btn-ghost" href="${u}" target="_blank">${u.split('/').pop()}</a></li>`).join('') || '<li class="muted">—</li>';
+  // recalcul sha256
+  const declared = p.sha256;
+  const enc = new TextEncoder().encode(JSON.stringify({...p, sha256:undefined}));
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  const recalculated = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 
   box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
-      <div>
-        <div class="mono muted" style="font-size:12px">${new Date(p.timestamp).toLocaleString()}</div>
-        <div style="font-weight:700">${p.title||p.id}</div>
-        <div class="mono muted" style="font-size:12px">id=${p.id} · kind=${p.kind} · ttv=${p.ttv_sec??'—'}s</div>
-      </div>
-      <button class="btn-ghost" onclick="navigator.clipboard.writeText('${p.id}')">Copier l’ID</button>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="muted" style="font-size:12px">${fmtDate(p.timestamp)}</div>
+      <button class="btn-ghost" id="copyId">Copier l’ID</button>
     </div>
-    <hr style="border-color:#1f2b2d;opacity:.2;margin:12px 0">
-    <div class="card" style="background:#0b1020">
-      <div class="mono" style="font-size:12px">sha256 (déclaré) : ${p.sha256}</div>
-      <div class="mono" style="font-size:12px">sha256 (recalculé) : ${recalc}</div>
-      <div style="margin-top:6px">${ok?'✅ Vérifié (match)':'❌ Mismatch'}</div>
-    </div>
-    <h3 style="margin-top:16px">Artifacts</h3>
-    <ul style="display:flex;gap:10px;flex-wrap:wrap;padding-left:0;list-style:none">${a}</ul>
-    <h3 style="margin-top:16px">JSON brut</h3>
-    <pre class="mono" style="white-space:pre-wrap;overflow:auto;background:#0b1020;border:1px solid #22333b;border-radius:12px;padding:12px">${JSON.stringify(p,null,2)}</pre>
+    <h2 style="margin:8px 0 6px 0">${p.title||p.id||'—'}</h2>
+    <div class="mono muted" style="font-size:12px">id=${p.id} · kind=${p.kind} · ttv=${p.ttv_sec||'—'}s</div>
+    <hr style="border-color:#1f2b2d;opacity:.3;margin:12px 0"/>
+    <div class="mono" style="font-size:12px">sha256 (déclaré) : ${declared}</div>
+    <div class="mono" style="font-size:12px">sha256 (recalculé) : ${recalculated}</div>
+    <div style="margin-top:6px">${declared===recalculated?'✅ Vérifié (match)':'❌ Mismatch'}</div>
+    <h3 style="margin-top:14px">Artifacts</h3>
+    <div id="arts" class="mono" style="font-size:12px"></div>
   `;
+
+  document.getElementById('copyId').onclick = ()=>{ copyTxt(p.id).then(()=>toast('ID copié')); };
+
+  const share = location.origin + '/public/proof.html?id=' + encodeURIComponent(id);
+  document.getElementById('copyLink').onclick = ()=>{ copyTxt(share).then(()=>toast('Lien copié')); };
+
+  const arts = Array.isArray(p.artifacts)?p.artifacts:[]; 
+  const artsBox = document.getElementById('arts');
+  if(!arts.length){ artsBox.textContent='(aucun)'; document.getElementById('openArtifact').style.display='none'; }
+  else{
+    artsBox.innerHTML = arts.map(a=>`<div><a class="btn-ghost" href="${a}">${a}</a></div>`).join('');
+    document.getElementById('openArtifact').href = arts[0];
+  }
 }
 load();
 </script>
+</body></html>
