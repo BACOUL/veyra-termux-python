@@ -197,7 +197,7 @@ def not_found(e):
 from flask import send_from_directory as _sfd
 
 @app.get('/app')
-def _app(): return _sfd('public','app.html')
+def _app(): return _sfd('public','index.html')
 
 @app.get('/benchmarks')
 def _bench(): return _sfd('public','benchmarks.html')

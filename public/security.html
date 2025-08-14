@@ -1,22 +1,28 @@
 <!doctype html><html lang="fr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Veyra — Sécurité & confidentialité</title>
-<meta name="description" content="RGPD, chiffrement, rétention TTL, webhooks signés, audit chaîné, verify.">
+<title>Sécurité & confidentialité — Veyra</title>
+<meta name="description" content="Chiffrement, RGPD, rétention, webhooks signés, audit chaîné, vérification indépendante.">
 <link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 </head><body>
 <header class="navbar"><div class="container inner">
   <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
-  <nav><a href="/security" data-match="/security">Security</a><a href="/docs" data-match="/docs">Docs</a></nav>
+  <nav><a href="/" data-match="/">Accueil</a><a href="/app" data-match="/app">Aujourd’hui</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/docs" data-match="/docs">Docs</a><a href="/security" data-match="/security">Security</a></nav>
+  <div class="actions"><a class="btn" href="/app">Ouvrir l’app</a></div>
 </div></header>
-<section class="container" style="padding:28px 0">
+
+<main class="container">
   <h1 class="h1">Sécurité & confidentialité</h1>
-  <div class="card"><ul>
-    <li>Local-first, export/purge, TTL par type</li>
-    <li>Chiffrement au repos, rotation de clés</li>
-    <li>Webhooks signés (anti-replay), idempotency</li>
-    <li>Journal d’audit chaîné + checkpoints hebdo</li>
-    <li>CLI <code>veyra verify</code> indépendant</li>
-  </ul></div>
-</section>
-<script src="/public/js/main.js"></script>
+  <div class="grid cols-2">
+    <div class="card"><h3>Chiffrement</h3><div class="small">Au repos & en transit. Hash SHA-256 des preuves.</div></div>
+    <div class="card"><h3>RGPD</h3><div class="small">Export, purge (TTL), minimisation, consentement explicite.</div></div>
+    <div class="card"><h3>Webhooks signés</h3><div class="small">HMAC + anti-replay (ts, nonce, tolérance 5 min).</div></div>
+    <div class="card"><h3>Audit chaîné</h3><div class="small">Checkpoints hebdo, vérification via <code>veyra verify</code>.</div></div>
+  </div>
+  <div class="card small">Signaler une vulnérabilité : <a class="link" href="mailto:security@veyra.app">security@veyra.app</a></div>
+</main>
+
+<footer><div class="container small">© <span data-year></span> Veyra — <a class="link" href="/privacy">Privacy</a> · <a class="link" href="/terms">Terms</a> · <a class="link" href="/legal">Legal</a></div></footer>
+<script src="/public/js/site.js"></script>
 </body></html>

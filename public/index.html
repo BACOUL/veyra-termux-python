@@ -1,83 +1,139 @@
 <!doctype html><html lang="fr"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veyra — Aujourd’hui</title>
-<link rel="stylesheet" href="/public/css/globals.css"/>
-<link rel="icon" href="/public/favicon.svg" type="image/svg+xml"/>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — OS d’actions prouvées</title>
+<meta name="description" content="Veyra mesure, propose, exécute et prouve. Reçus JSON hachés + audit chaîné. Ouvrir l’app ou voir les métriques.">
+<link rel="icon" href="/public/favicon.svg">
+<link rel="stylesheet" href="/public/css/globals.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Veyra","url":"https://veyra.app","logo":"/public/logo/veyra_mark_dark.svg"}
+</script>
 </head><body>
-<main class="container" style="padding:28px 16px">
-  <section class="card" style="padding:20px;overflow:hidden">
-    <div class="badge">Preuve-ou-rien • Local-first</div>
-    <h1 style="font-family:var(--veyra-font-head);font-size:44px;line-height:1.1;margin:10px 0;color:var(--veyra-primary)">
-      Veyra le fait.<br/>Vous validez. Preuve à l’arrivée.
-    </h1>
-    <p class="muted" style="max-width:56ch">OS d’actions prouvées — 1–3 cartes classées, exécution sous caps N0→N3, reçu JSON haché + audit.</p>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <a class="btn" href="#today">Voir mes priorités</a>
-      <a class="btn-ghost" href="/public/proofs.html">Voir une preuve</a>
+<header class="navbar">
+  <div class="container inner">
+    <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt="" /><span>Veyra</span></a>
+    <nav>
+      <a href="/" data-match="/">Accueil</a>
+      <a href="/app" data-match="/app">Aujourd’hui</a>
+      <a href="/benchmarks" data-match="/benchmarks">Benchmarks</a>
+      <a href="/docs" data-match="/docs">Docs</a>
+      <a href="/security" data-match="/security">Security</a>
+    </nav>
+    <div class="actions"><a class="btn" href="/app">Ouvrir l’app</a></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <section class="container" style="padding:28px 0">
+    <div class="grid cols-2">
+      <div>
+        <span class="badge">Preuve-ou-rien • Local-first</span>
+        <h1 class="h1" style="margin-top:10px">Veyra le fait.<br>Vous validez. Preuve à l’arrivée.</h1>
+        <p class="sub">OS d’actions prouvées — 1–3 cartes classées, exécution sous caps N0→N3, reçu JSON haché + audit chaîné.</p>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <a class="btn" href="/app">Ouvrir l’app</a>
+          <a class="btn-ghost" href="/benchmarks">Voir les métriques</a>
+        </div>
+      </div>
+      <aside class="card">
+        <div class="small muted" style="margin-bottom:6px">Preuve réelle (exemple)</div>
+<pre class="mono" style="white-space:pre-wrap;background:#0b1020;border:1px solid var(--v-border);border-radius:12px;padding:12px;overflow:auto">
+{ "id":"p_demo", "kind":"receipt", "sha256":"988b…3acb", "result":{"status":"success"} }
+</pre>
+        <div class="small muted" style="margin-top:6px">Audit chaîné · SHA-256 · Checkpoints hebdo</div>
+      </aside>
     </div>
   </section>
 
-  <section id="proof-sample" class="card" style="margin-top:16px">
-    <h3>Preuve réelle (dernière)</h3>
-    <div id="last-proof" class="mono" style="font-size:12px;white-space:pre-wrap;background:#0b1020;border:1px solid var(--veyra-slate-700);border-radius:12px;padding:12px;margin-top:8px">Chargement…</div>
-    <div style="margin-top:8px;">
-      <a id="last-proof-link" class="btn-ghost" href="/public/proofs.html">Ouvrir dans le viewer</a>
+  <!-- Comment ça marche -->
+  <section class="container">
+    <h2 class="h2">Comment ça marche ?</h2>
+    <div class="grid cols-3">
+      <div class="card"><h3>1. Mesure</h3><div class="small">Capte email/fichiers/calendrier (avec votre accord).</div></div>
+      <div class="card"><h3>2. Propose & exécute</h3><div class="small">Action Cards classées, caps N0→N3.</div></div>
+      <div class="card"><h3>3. Prouve</h3><div class="small">Reçu JSON/EML/PDF/ICS + hash + audit.</div></div>
     </div>
   </section>
 
-  <section id="today" class="cards" style="margin-top:20px">
-    <h2>Aujourd’hui</h2>
-    <div id="today-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px"></div>
+  <!-- Différent -->
+  <section class="container">
+    <h2 class="h2">Pourquoi c’est différent</h2>
+    <div class="card">
+      <div class="badges">
+        <span class="badge">Preuve-ou-rien</span>
+        <span class="badge">Local-first</span>
+        <span class="badge">Autonomie réglable</span>
+        <span class="badge">Domain Kits ≤ 48 h</span>
+      </div>
+    </div>
   </section>
+
+  <!-- Kits -->
+  <section class="container">
+    <h2 class="h2">Kits phares</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3 style="margin:0 0 6px 0">Spend Saver</h3>
+        <div class="small muted">Résiliation/renégociation</div>
+        <ul><li>Preuves : email+pdf</li><li>TTV médian : &lt;10 min</li><li>Niveaux : N1→N3</li></ul>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 6px 0">Attestation / Morning</h3>
+        <div class="small muted">Administratif rapide</div>
+        <ul><li>Preuves : journal+pdf</li><li>TTV médian : &lt;5 min</li><li>Niveaux : N0→N2</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confiance & sécurité -->
+  <section class="container">
+    <h2 class="h2">Confiance & sécurité</h2>
+    <div class="card small">
+      RGPD, export/purge TTL, webhooks signés, journal d’audit, <code>veyra verify</code>. <a class="link" href="/security">En savoir plus →</a>
+    </div>
+  </section>
+
+  <!-- Benchmarks live (teaser) -->
+  <section class="container">
+    <h2 class="h2">Benchmarks (live)</h2>
+    <div class="grid cols-3">
+      <div class="card"><div class="small muted">TTV médian</div><div id="tease-ttv" style="font-weight:700;font-size:24px">—</div></div>
+      <div class="card"><div class="small muted">VSR</div><div id="tease-vsr" style="font-weight:700;font-size:24px">—</div></div>
+      <div class="card"><div class="small muted">Preuves/24h</div><div id="tease-p24" style="font-weight:700;font-size:24px">—</div></div>
+    </div>
+    <div style="margin-top:10px"><a class="btn-ghost" href="/benchmarks">Voir toutes les métriques</a></div>
+  </section>
+
+  <!-- CTA bas -->
+  <section class="container">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div>
+        <h3 style="margin:0">Rejoindre le pilote (gratuit)</h3>
+        <div class="small muted">Pas de carte bleue, preuves publiques.</div>
+      </div>
+      <a class="btn" href="/app">Ouvrir l’app</a>
+    </div>
+  </section>
+
 </main>
 
-<script src="/public/js/layout.js"></script>
-<script src="/public/js/main.js"></script>
+<footer><div class="container small">© Veyra — <a class="link" href="/security">Security</a> · <a class="link" href="/status">Status</a> · <a class="link" href="/help">Help</a> · <a class="link" href="/privacy">Privacy</a> · <a class="link" href="/terms">Terms</a> · <a class="link" href="/legal">Legal</a></div></footer>
+
 <script>
-async function loadLastProof(){
+(async()=>{
+  // nav active
+  const p=location.pathname||'/'; document.querySelectorAll('nav a').forEach(a=>{const m=a.getAttribute('data-match'); if(m && p.startsWith(m)) a.classList.add('active')})
+  // teaser metrics
   try{
-    const list = await getJSON('/proofs');
-    const id = (list.items||[]).slice(-1)[0];
-    if(!id){ document.getElementById('last-proof').textContent='Aucune preuve pour l’instant.'; return; }
-    const p = await (await fetch('/proofs/'+id)).json();
-    document.getElementById('last-proof').textContent = JSON.stringify({id:p.id, kind:p.kind, sha256:p.sha256, result:p.result}, null, 2);
-    document.getElementById('last-proof-link').href = '/public/proof.html?id='+encodeURIComponent(id);
-  }catch(e){ document.getElementById('last-proof').textContent='Impossible de charger : '+e.message; }
-}
-
-function cardHTML(c){
-  const mins = Math.round((c.estimates?.time_min||1));
-  const score = (c.score||0).toFixed(2);
-  return `
-  <div class="card">
-    <div class="badge">score ${score} • ~${mins} min</div>
-    <h3 style="margin:8px 0 6px 0">${c.title||c.id}</h3>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn" data-run="${c.id}">Lancer</button>
-      <a class="btn-ghost" href="/public/app.html">Détails</a>
-    </div>
-  </div>`;
-}
-
-async function loadToday(){
-  const root = document.getElementById('today-list'); root.innerHTML='';
-  try{
-    const j = await getJSON('/today?n=3');
-    (j.priorities||[]).forEach(c => root.appendChild(el(cardHTML(c))));
-  }catch(e){ root.appendChild(el(`<div class="card">Erreur : ${e.message}</div>`)); }
-  root.querySelectorAll('[data-run]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      btn.disabled = true; const id = btn.getAttribute('data-run');
-      try{
-        const r = await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':idk()}, body:JSON.stringify({id})});
-        const j = await r.json();
-        if(j.proof_id){ toast('Preuve créée'); setTimeout(()=>location.href='/public/proof.html?id='+encodeURIComponent(j.proof_id), 300); return; }
-        toast('Exécution OK (pas de proof_id)');
-      }catch(e){ toast('Échec : '+e.message); }
-      finally{ btn.disabled = false; }
-    });
-  });
-}
-loadToday(); loadLastProof();
+    const r=await fetch('/metrics'); const m=await r.json();
+    const n=(x)=>x==null?'—':x; 
+    document.getElementById('tease-ttv').textContent = n(m.ttv_median);
+    document.getElementById('tease-vsr').textContent = m.vsr_ratio!=null? Math.round(m.vsr_ratio*100)+'%':'—';
+    document.getElementById('tease-p24').textContent = n(m.total_proofs);
+  }catch(e){}
+})();
 </script>
 </body></html>

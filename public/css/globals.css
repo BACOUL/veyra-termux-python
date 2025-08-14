@@ -1,55 +1,90 @@
-/* globals.css */
+/* ============ Veyra — design system ============ */
 :root{
-  /* couleurs */
-  --veyra-primary: #00C2A8;       /* turquoise action/preuve */
-  --veyra-primary-600: #00A690;
-  --veyra-primary-700: #028272;
-  --veyra-dark:   #0E1116;        /* fond principal */
-  --veyra-light:  #F8FAFC;        /* fond clair */
-  --veyra-slate-900:#0E1116; --veyra-slate-800:#111827;
-  --veyra-slate-700:#1F2937; --veyra-slate-600:#374151;
-  --veyra-slate-500:#6B7280;
+  --v-primary:#00C2A8; --v-primary-600:#00A690; --v-primary-700:#028272;
+  --v-bg:#0E1116; --v-panel:#0F1422; --v-panel-2:#0B1020;
+  --v-text:#E5F3F0; --v-muted:#9CA3AF;
+  --v-border:#1F2937; --v-border-2:#2B3547;
+  --v-success:#16A34A; --v-warn:#F59E0B; --v-error:#EF4444;
 
-  /* états */
-  --veyra-success:#16A34A;
-  --veyra-warn:#F59E0B;
-  --veyra-error:#EF4444;
-
-  /* typographies */
-  --veyra-font-sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --veyra-font-head:"Sora","Space Grotesk",var(--veyra-font-sans);
-  --veyra-font-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
-
-  /* composants */
-  --veyra-radius:16px;
-  --veyra-shadow:0 12px 28px rgba(0,194,168,.18);
-
-  /* spacing scale (8-pt + demi) */
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px;
-  --sp-6:24px; --sp-7:28px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
-}
-@media (prefers-color-scheme: light){
-  :root{ --veyra-dark:#F8FAFC; --veyra-light:#0B1220; }
+  --v-radius:16px; --v-shadow:0 16px 44px rgba(0,194,168,.16);
+  --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px; --sp-10:40px;
+  --maxw:1100px;
 }
 
-/* base */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  background:var(--veyra-dark);
-  color:#E5F3F0;
-  font-family:var(--veyra-font-sans);
-  margin:0;
+  margin:0; color:var(--v-text); background:var(--v-bg); font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 
-/* utilitaires */
-.container{max-width:1120px;margin:0 auto;padding:0 var(--sp-6)}
-.card{background:var(--veyra-slate-800);border:1px solid var(--veyra-slate-700);
-  border-radius:var(--veyra-radius);padding:var(--sp-6);box-shadow:var(--veyra-shadow)}
-.btn{display:inline-block;background:var(--veyra-primary);color:var(--veyra-dark);
-  font-weight:700;border-radius:var(--veyra-radius);padding:10px 14px;box-shadow:var(--veyra-shadow);
-  text-decoration:none}
-.btn:hover{opacity:.9}
-.badge{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--veyra-slate-700);
-  background:rgba(17,24,39,.6);color:#CFFAF2;border-radius:999px;font-size:14px;padding:6px 10px}
-.mono{font-family:var(--veyra-font-mono)}
+/* subtle hero glow */
+body::before{
+  content:""; position:fixed; inset:-20% -20% auto -20%; height:60%;
+  background:radial-gradient(60% 60% at 20% 10%, rgba(0,194,168,.22), transparent 60%),
+             radial-gradient(40% 40% at 90% -10%, rgba(12,230,203,.12), transparent 60%);
+  z-index:-1; filter:blur(10px);
+}
+
+.container{max-width:var(--maxw); margin:0 auto; padding:0 var(--sp-4)}
+
+/* ============ Navbar ============ */
+.navbar{position:sticky; top:0; z-index:40; backdrop-filter:saturate(140%) blur(10px);
+  border-bottom:1px solid var(--v-border); background:rgba(14,17,22,.6)}
+.navbar .inner{display:flex; align-items:center; gap:12px; height:64px}
+.brand{display:flex; align-items:center; gap:10px; color:var(--v-text); text-decoration:none; font-weight:700}
+.brand img{width:28px; height:28px; border-radius:12px}
+nav{display:flex; gap:8px; margin-left:8px}
+nav a{display:inline-flex; align-items:center; height:36px; padding:0 12px; border:1px solid var(--v-border);
+  border-radius:999px; color:var(--v-muted); text-decoration:none; background:rgba(17,24,39,.6)}
+nav a.active, nav a:hover{color:#091015; background:var(--v-primary); border-color:transparent}
+
+.actions{margin-left:auto; display:flex; align-items:center; gap:8px}
+.btn{display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px;
+  border-radius:999px; background:var(--v-primary); color:#081015; font-weight:700; text-decoration:none; box-shadow:var(--v-shadow)}
+.btn:hover{opacity:.92} .btn:active{transform:translateY(1px)}
+.btn-ghost{display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px;
+  border-radius:999px; color:var(--v-text); border:1px solid var(--v-border); text-decoration:none; background:rgba(17,24,39,.6)}
+.badge{display:inline-flex; gap:8px; align-items:center; border:1px solid var(--v-border); background:rgba(17,24,39,.6); color:#CFFAF2; padding:6px 10px; border-radius:999px; font-size:12px}
+
+/* ============ Cards & blocks ============ */
+.card{background:linear-gradient(180deg, rgba(11,16,32,.9), rgba(11,16,32,.7)); border:1px solid var(--v-border-2);
+  border-radius:20px; padding:18px; box-shadow:0 1px 0 rgba(255,255,255,.02) inset}
+.mono{font-family:JetBrains Mono, ui-monospace, Menlo, Consolas, monospace; font-size:12px}
+.muted{color:var(--v-muted)}
+.grid{display:grid; gap:16px}
+@media(min-width:900px){ .grid.cols-2{grid-template-columns:1fr 1fr} .grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+
+/* ============ Toasts ============ */
+.toast{position:fixed; right:16px; bottom:16px; padding:12px 14px; border-radius:12px; background:#0B1020; border:1px solid var(--v-border); box-shadow:var(--v-shadow)}
+.toast.ok{border-color:#0FA}
+.toast a{color:#0FE}
+
+/* ============ Footer ============ */
+footer{border-top:1px solid var(--v-border); margin-top:var(--sp-10); padding:var(--sp-8) 0; color:var(--v-muted); font-size:14px}
+
+/* utility */
+.h1{font-family:Sora,Inter,sans-serif; font-weight:700; font-size:44px; line-height:1.05; letter-spacing:-0.01em}
+.sub{font-size:18px; color:var(--v-muted)}
+.space{height:22px}
+.divider{height:1px; background:var(--v-border); margin:16px 0}
+.small{font-size:12px; color:var(--v-muted)}
+.link{color:var(--v-primary); text-decoration:none}
+.link:hover{text-decoration:underline}
+
+/* --- layout helpers (ajouts) --- */
+.navbar{position:sticky;top:0;background:linear-gradient(180deg,#0b1220,transparent);
+  border-bottom:1px solid var(--v-border);z-index:50}
+.navbar .inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.brand{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.brand img{width:28px;height:28px;border-radius:12px}
+nav a{padding:8px 10px;border:1px solid transparent;border-radius:999px;text-decoration:none}
+nav a:hover{background:rgba(0,194,168,.08);border-color:var(--v-border)}
+nav a.active{background:rgba(0,194,168,.18);border-color:var(--v-border)}
+footer{margin:40px 0 20px;border-top:1px solid var(--v-border);padding-top:14px}
+.small{font-size:12px}
+.link{color:var(--veyra-primary);text-decoration:none}
+.link:hover{text-decoration:underline}
+.grid.cols-2{display:grid;gap:14px;grid-template-columns:1fr}
+.grid.cols-3{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:920px){.grid.cols-2{grid-template-columns:1.2fr .8fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}

@@ -1,24 +1,51 @@
 <!doctype html><html lang="fr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Veyra — Docs</title>
-<meta name="description" content="Proof Protocol, Verify CLI, API & SDK Kits.">
+<title>Docs — Veyra</title>
+<meta name="description" content="Documentation Veyra : Proof Protocol, Verify CLI, API & SDK Domain Kits.">
 <link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 </head><body>
 <header class="navbar"><div class="container inner">
   <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
-  <nav><a href="/docs" data-match="/docs">Docs</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/security" data-match="/security">Security</a></nav>
+  <nav><a href="/" data-match="/">Accueil</a><a href="/app" data-match="/app">Aujourd’hui</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/docs" data-match="/docs">Docs</a><a href="/security" data-match="/security">Security</a></nav>
+  <div class="actions"><a class="btn" href="/app">Ouvrir l’app</a></div>
 </div></header>
-<section class="container" style="padding:28px 0">
+
+<main class="container">
   <h1 class="h1">Documentation</h1>
-  <div class="card"><h3 style="margin:0">Proof Protocol v0.1</h3>
-    <pre class="mono" style="white-space:pre-wrap;background:var(--v-panel);padding:10px;border-radius:12px;border:1px solid var(--v-border)">{ "id":"p_...", "kind":"receipt|email|pdf|ics|journal", "sha256":"...", "timestamp":"...", "result":{"status":"success|failure"} }</pre>
-  </div>
-  <div class="card"><h3 style="margin:0">CLI veyra verify</h3><pre class="mono">veyra verify --week 2025-W33</pre></div>
-  <div class="card"><h3 style="margin:0">API</h3><pre class="mono">GET /today?n=3
-POST /run {"id":"..."}
+
+  <section class="card">
+    <h2 class="h2">Proof Protocol v0.1</h2>
+    <pre class="mono" style="white-space:pre-wrap;background:#0b1020;border:1px solid var(--v-border);border-radius:12px;padding:12px">
+{id, action_id, title, kind, sha256, timestamp, level, costs:{eur,sec}, result:{status,notes}, artifacts[]}
+    </pre>
+    <div class="small muted">Chaque preuve est hachée (SHA-256) et inscrite au journal d’audit chaîné.</div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">CLI <code>veyra verify</code></h2>
+    <pre class="mono"># Rejoue la chaîne d'audit et vérifie les preuves
+veyra verify proofs/ audit/ --week 2025-W33
+    </pre>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">API (extraits)</h2>
+    <pre class="mono">GET /today?n=3
+POST /run {"id":"admin.attestation"}
 GET /proofs/:id
-GET /audit, /status, /metrics</pre></div>
-  <div class="card"><h3 style="margin:0">SDK Domain Kits (TS)</h3><pre class="mono">suggest(ctx): ActionCard[]; run(ctx,card): Proof</pre></div>
-</section>
-<script src="/public/js/main.js"></script>
+GET /audit
+GET /metrics
+    </pre>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">SDK Domain Kits</h2>
+    <pre class="mono">suggest(ctx) -> ActionCard[] | run(ctx,card) -> proof | verify(proof) -> bool</pre>
+  </section>
+</main>
+
+<footer><div class="container small">© <span data-year></span> Veyra — <a class="link" href="/security">Security</a> · <a class="link" href="/status">Status</a> · <a class="link" href="/help">Help</a> · <a class="link" href="/privacy">Privacy</a> · <a class="link" href="/terms">Terms</a> · <a class="link" href="/legal">Legal</a></div></footer>
+<script src="/public/js/site.js"></script>
 </body></html>
