@@ -1,0 +1,33 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — Démos</title>
+<meta name="description" content="Exemples de preuves anonymisées.">
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+</head><body>
+<header class="navbar"><div class="container inner">
+  <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
+  <nav><a href="/app" data-match="/app">Aujourd’hui</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/demos" data-match="/demos">Démos</a></nav>
+  <div class="actions"><a class="btn" href="/export.zip">Export ZIP</a></div></div></header>
+
+<section class="container" style="padding:28px 0">
+  <h1 class="h1">Galerie de preuves</h1>
+  <div class="grid cols-3" id="gal"></div>
+</section>
+
+<script>
+(async ()=>{
+  const el=document.getElementById('gal');
+  const samples=['p_demo_1.json','p_demo_2.json'];
+  for(const f of samples){
+    const r=await fetch('/public/proofs-samples/'+f); const p=await r.json();
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div style="font-weight:700">${p.title||p.kind}</div>
+      <div class="small muted">${p.id} • ${p.kind} • sha256 ${String(p.sha256).slice(0,10)}…</div>
+      <pre class="mono" style="background:var(--v-panel);padding:10px;border-radius:12px;border:1px solid var(--v-border)">${JSON.stringify(p,null,2)}</pre>
+      <div style="display:flex;gap:8px"><a class="btn-ghost" href="/public/proof.html?id=${p.id}">Voir</a><button class="btn-ghost" onclick="alert('Rejouer (mock)')">Rejouer l’action</button></div>`;
+    el.appendChild(card);
+  }
+})();
+</script>
+<script src="/public/js/main.js"></script>
+</body></html>

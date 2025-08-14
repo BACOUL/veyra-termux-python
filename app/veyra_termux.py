@@ -192,3 +192,49 @@ def not_found(e):
         return _sfd('public','404.html'), 404
     except Exception:
         return 'Not Found', 404
+
+# --- Pretty routes (serve static pages) ---
+from flask import send_from_directory as _sfd
+
+@app.get('/app')
+def _app(): return _sfd('public','app.html')
+
+@app.get('/benchmarks')
+def _bench(): return _sfd('public','benchmarks.html')
+
+@app.get('/demos')
+def _demos(): return _sfd('public','demos.html')
+
+@app.get('/kits')
+def _kits(): return _sfd('public','kits.html')
+
+@app.get('/business')
+def _biz(): return _sfd('public','business.html')
+
+@app.get('/docs')
+def _docs(): return _sfd('public','docs.html')
+
+@app.get('/security')
+def _sec(): return _sfd('public','security.html')
+
+@app.get('/help')
+def _help(): return _sfd('public','help.html')
+
+@app.get('/privacy')
+def _prv(): return _sfd('public','privacy.html')
+
+@app.get('/terms')
+def _terms(): return _sfd('public','terms.html')
+
+@app.get('/legal')
+def _legal(): return _sfd('public','legal.html')
+
+# PWA / SEO at root-scope
+@app.get('/manifest.webmanifest')
+def _mf(): return _sfd('public','manifest.webmanifest')
+@app.get('/sw.js')
+def _sw(): return _sfd('public','sw.js')
+@app.get('/robots.txt')
+def _rb(): return _sfd('public','robots.txt')
+@app.get('/sitemap.xml')
+def _sm(): return _sfd('public','sitemap.xml')

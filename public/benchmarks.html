@@ -1,46 +1,39 @@
 <!doctype html><html lang="fr"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veyra — Benchmarks</title>
-<link rel="stylesheet" href="/public/css/globals.css"/>
+<meta name="description" content="TTV médian, VSR et volume de preuves — métriques Veyra en direct.">
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
 </head><body>
-<main class="container" style="padding:24px 16px">
-  <h1>Benchmarks</h1>
-  <div id="nums" class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"></div>
-  <canvas id="chart" width="900" height="280" style="width:100%;max-width:900px;margin-top:16px;border:1px solid var(--veyra-slate-700);border-radius:12px;background:#0b1020"></canvas>
-</main>
-<script src="/public/js/layout.js"></script>
+<header class="navbar"><div class="container inner">
+  <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
+  <nav><a href="/app" data-match="/app">Aujourd’hui</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/docs" data-match="/docs">Docs</a><a href="/status" data-match="/status">Status</a></nav>
+  <div class="actions"><a class="btn" href="/export.zip">Export CSV/ZIP</a></div></div></header>
+
+<section class="container" style="padding:28px 0">
+  <h1 class="h1" style="margin:0 0 8px 0">Benchmarks live</h1>
+  <p class="sub">TTV médian (s), VSR (%), Preuves / 24 h</p>
+  <div class="grid cols-3" style="margin-top:16px">
+    <div class="card"><div class="small muted">TTV médian</div><div id="ttv" style="font-size:28px;font-weight:700">—</div></div>
+    <div class="card"><div class="small muted">VSR</div><div id="vsr" style="font-size:28px;font-weight:700">—</div></div>
+    <div class="card"><div class="small muted">Preuves/24h</div><div id="p24" style="font-size:28px;font-weight:700">—</div></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3 style="margin:0 0 8px 0">Comment c’est calculé ?</h3>
+    <div class="small">Données issues de <code>/metrics</code> (serveur). Vérifiable via <code>veyra verify</code> et checkpoints hebdo.</div>
+  </div>
+</section>
+
+<footer><div class="container small">© Veyra — <a class="link" href="/docs">Docs</a> · <a class="link" href="/security">Security</a></div></footer>
 <script>
-function median(a){ if(!a.length) return 0; const s=a.slice().sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
-function p95(a){ if(!a.length) return 0; const s=a.slice().sort((x,y)=>x-y); const i=Math.floor(0.95*(s.length-1)); return s[i]; }
-async function load(){
-  const list = await (await fetch('/proofs')).json();
-  const ids = (list.items||list||[]);
-  const proofs = await Promise.all(ids.map(id=>fetch('/proofs/'+id).then(r=>r.json()).catch(()=>null)));
-  const ok = proofs.filter(p=>p && p.result && p.result.status==='success');
-  const ttv = ok.map(p=>+p.ttv_sec||0).filter(x=>x>=0);
-
-  // KPIs
-  const nums = document.getElementById('nums');
-  const kpi = (label,val,unit='')=>`<div class="card"><div class="muted">${label}</div><div style="font-size:28px;font-weight:700;margin-top:6px">${val}${unit}</div></div>`;
-  nums.innerHTML = kpi('Preuves totales', proofs.length)
-                 + kpi('VSR (succès)', (proofs.length?Math.round(ok.length*100/proofs.length):0)+'%')
-                 + kpi('TTV médian', (median(ttv)||0).toFixed(3),' s')
-                 + kpi('TTV p95', (p95(ttv)||0).toFixed(3),' s');
-
-  // Mini-graphe TTV (20 derniers)
-  const last = ttv.slice(-20);
-  const c = document.getElementById('chart').getContext('2d');
-  c.clearRect(0,0,900,280);
-  const pad=28, w=900-pad*2, h=280-pad*2, min=0, max=Math.max(...last,1);
-  // axes
-  c.strokeStyle='#2a3344'; c.beginPath(); c.moveTo(pad,pad); c.lineTo(pad,pad+h); c.lineTo(pad+w,pad+h); c.stroke();
-  // ligne
-  c.strokeStyle='#00C2A8'; c.lineWidth=2; c.beginPath();
-  last.forEach((v,i)=>{ const x=pad+i*(w/Math.max(last.length-1,1)); const y=pad+h-(v/min===Infinity?0:(v-min)/(max-min||1))*h; if(i===0) c.moveTo(x,y); else c.lineTo(x,y); });
-  c.stroke();
-  // points
-  c.fillStyle='#0CE6CB'; last.forEach((v,i)=>{ const x=pad+i*(w/Math.max(last.length-1,1)); const y=pad+h-(v-min)/(max-min||1)*h; c.beginPath(); c.arc(x,y,3,0,Math.PI*2); c.fill(); });
-}
-load();
+(async ()=>{
+  try{
+    const r=await fetch('/metrics'); const m=await r.json();
+    const safe=(x)=> (x==null?'—':(typeof x==='number'? (''+x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g,'\u00A0') : x));
+    document.getElementById('ttv').textContent = safe(m.ttv_median);
+    document.getElementById('vsr').textContent = (m.vsr_ratio!=null? Math.round(m.vsr_ratio*100)+'%':'—');
+    document.getElementById('p24').textContent = safe(m.total_proofs);
+  }catch(e){ console.error(e); }
+})();
 </script>
+<script src="/public/js/main.js"></script>
 </body></html>

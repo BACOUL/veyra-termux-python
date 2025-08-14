@@ -1,0 +1,24 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — Docs</title>
+<meta name="description" content="Proof Protocol, Verify CLI, API & SDK Kits.">
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+</head><body>
+<header class="navbar"><div class="container inner">
+  <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
+  <nav><a href="/docs" data-match="/docs">Docs</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/security" data-match="/security">Security</a></nav>
+</div></header>
+<section class="container" style="padding:28px 0">
+  <h1 class="h1">Documentation</h1>
+  <div class="card"><h3 style="margin:0">Proof Protocol v0.1</h3>
+    <pre class="mono" style="white-space:pre-wrap;background:var(--v-panel);padding:10px;border-radius:12px;border:1px solid var(--v-border)">{ "id":"p_...", "kind":"receipt|email|pdf|ics|journal", "sha256":"...", "timestamp":"...", "result":{"status":"success|failure"} }</pre>
+  </div>
+  <div class="card"><h3 style="margin:0">CLI veyra verify</h3><pre class="mono">veyra verify --week 2025-W33</pre></div>
+  <div class="card"><h3 style="margin:0">API</h3><pre class="mono">GET /today?n=3
+POST /run {"id":"..."}
+GET /proofs/:id
+GET /audit, /status, /metrics</pre></div>
+  <div class="card"><h3 style="margin:0">SDK Domain Kits (TS)</h3><pre class="mono">suggest(ctx): ActionCard[]; run(ctx,card): Proof</pre></div>
+</section>
+<script src="/public/js/main.js"></script>
+</body></html>

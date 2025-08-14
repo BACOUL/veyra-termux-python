@@ -1,71 +1,26 @@
-<!doctype html><html lang="fr">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Veyra — Aujourd'hui</title>
-  <link rel="icon" href="/public/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Sora:wght@600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/public/css/globals.css">
-  <style>
-    .grid{display:grid;gap:var(--sp-6)} @media(min-width:960px){ .grid-2{grid-template-columns:1.2fr .8fr} }
-    h1{font-family:var(--veyra-font-head);font-weight:700;font-size:42px;line-height:1.15;color:var(--veyra-primary);margin:var(--sp-4) 0}
-    p.lead{color:var(--veyra-slate-500);font-size:18px} .muted{color:var(--veyra-slate-500)}
-    .logo{width:56px;height:56px;border-radius:14px;margin-bottom:10px}
-    .btn-ghost{display:inline-block;border:1px solid var(--veyra-slate-700);border-radius:var(--veyra-radius);padding:10px 14px;color:#CFFAF2;text-decoration:none}
-    .cards{margin-top:var(--sp-6)} .card h3{margin:0 0 8px 0}
-    code.preview{display:block;background:#0b1020;border:1px solid var(--veyra-slate-700);border-radius:12px;padding:14px;overflow:auto;font-size:13px}
-  </style>
-</head>
-<body>
-  <main class="container">
-    <section class="grid grid-2" style="margin-top:var(--sp-8)">
-      <div>
-        <span class="badge">Preuve-ou-rien • Local-first</span>
-        <h1>Veyra le fait.<br>Vous validez. Preuve à l’arrivée.</h1>
-        <p class="lead">OS d’actions prouvées — 1–3 cartes classées, exécution sous caps N0→N3, reçu JSON haché + audit chaîné.</p>
-        <div style="display:flex;gap:12px;margin-top:var(--sp-6)">
-          <a href="#app" class="btn">Voir mes priorités</a>
-          <a href="#preuve" class="btn-ghost">Voir une preuve</a>
-        </div>
-      </div>
-      <aside class="card">
-        <img src="/public/logo/veyra_mark_dark.svg" alt="Veyra" class="logo">
-        <h3 style="margin:0 0 6px 0">Preuve réelle (exemple)</h3>
-        <code class="preview mono" id="preuve">{ "id":"p_demo","kind":"receipt","sha256":"…","result":{"status":"success"} }</code>
-        <p class="muted" style="margin-top:8px">Audit chaîné • SHA-256 • Checkpoints hebdo</p>
-      </aside>
-    </section>
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veyra — App</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#00C2A8">
+<link rel="icon" href="/public/favicon.svg"><link rel="stylesheet" href="/public/css/globals.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+</head><body>
+<header class="navbar"><div class="container inner">
+  <a class="brand" href="/"><img src="/public/logo/veyra_mark_dark.svg" alt=""><span>Veyra</span></a>
+  <nav><a href="/app" data-match="/app">Aujourd’hui</a><a href="/benchmarks" data-match="/benchmarks">Benchmarks</a><a href="/docs" data-match="/docs">Docs</a><a href="/status" data-match="/status">Status</a></nav>
+  <div class="actions"><a class="btn" href="/export.zip">Export ZIP</a></div>
+</div></header>
 
-    <section id="app" class="cards">
-      <h2 style="margin:20px 0 8px 0">Aujourd’hui</h2>
-      <div id="list"></div>
-    </section>
-  </main>
+<section class="container" style="padding:28px 0">
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="margin:0">Aujourd’hui</h2>
+    <button id="quick" class="btn-ghost">Lancer la meilleure</button>
+  </div><div id="list" style="margin-top:12px"></div></div>
+</section>
 
-  <script>
-  async function load(){
-    const r = await fetch('/today?n=3'); const j = await r.json();
-    const root = document.getElementById('list'); root.innerHTML='';
-    j.priorities.forEach(c=>{
-      const el = document.createElement('div'); el.className='card';
-      const mins = (c.estimates?.time_min||1); const score = (c.score||0).toFixed(2);
-      el.innerHTML = `<h3>${c.title}</h3>
-        <p class="muted">Score: ${score} · ~${mins} min</p>
-        <div style="display:flex;gap:10px">
-          <button class="btn" onclick="run('${c.id}')">Lancer</button>
-          <a class="btn-ghost" href="#preuve">Détails</a>
-        </div>`;
-      root.appendChild(el);
-    });
-  }
-  async function run(id){
-    const r = await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':(Date.now()+''+Math.random()).slice(0,16)},body:JSON.stringify({id})});
-    const j = await r.json();
-    document.getElementById('preuve').textContent = JSON.stringify({proof_id:j.proof_id, sha256:j.sha256, ok:j.ok}, null, 2);
-    alert('Preuve: '+j.proof_id+'\\nSHA-256: '+j.sha256);
-  }
-  load();
-  </script>
-</body>
-</html>
+<footer><div class="container small">© Veyra — <a class="link" href="/security">Security</a> · <a class="link" href="/help">Help</a></div></footer>
+<script src="/public/js/main.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}})</script>
+</body></html>
